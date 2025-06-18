@@ -1,0 +1,39 @@
+name: Deploy Node.js App to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Deploy to EC2
+        env:
+          HOST: ${{ secrets.SSH_HOST }}
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$KEY" > key.pem
+          chmod 600 key.pem
+          rsync -avz -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./ ec2-user@$HOST:/home/ec2-user/simple-ecommerce/
+          ssh -i key.pem ec2-user@$HOST << 'EOF'
+            cd ~/simple-ecommerce
+            npm install
+            pm2 stop all || true
+            pm2 start app.js --name ecommerce
+            pm2 save
+          EOF
+
