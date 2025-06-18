@@ -18,9 +18,6 @@ app.use(express.static(__dirname + '/views'));
 app.get("/admin", function (req, res) {
     res.render('index')
 });
-app.get("/", (req, res) => {
-    res.redirect("/admin");
-});
 app.get("/homeAdmin", function (req, res) {
     if (sess.username && sess.password)
         res.render('homeAdmin');
@@ -326,7 +323,10 @@ app.get("/Controller_shoppingCart/:id", async(req, res) => {
     }
     res.redirect("/home")
 })
+app.get("/", (req, res) => {
+    res.redirect("/admin");
+});
 
-app.listen(8080, () => {
-    console.log('listening:8080');
+app.listen(3000, () => {
+    console.log('listening:3000');
 });
