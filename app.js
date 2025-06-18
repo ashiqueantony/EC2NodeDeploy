@@ -18,6 +18,9 @@ app.use(express.static(__dirname + '/views'));
 app.get("/admin", function (req, res) {
     res.render('index')
 });
+app.get("/", (req, res) => {
+    res.redirect("/admin");
+});
 app.get("/homeAdmin", function (req, res) {
     if (sess.username && sess.password)
         res.render('homeAdmin');
