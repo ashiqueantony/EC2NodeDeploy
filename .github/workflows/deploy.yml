@@ -22,12 +22,17 @@ jobs:
 
       - name: Configure npm to use Nexus
         run: |
-          echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):\
-          _auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
+          echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
           echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
 
       - name: Install Dependencies from Nexus
         run: npm install
+
+      - name: Publish to Nexus Repository
+        run: |
+          echo "//$(echo ${{ secrets.NEXUS_PUBLISH_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
+          echo "registry=${{ secrets.NEXUS_PUBLISH_REGISTRY }}" >> .npmrc
+          npm publish --registry=${{ secrets.NEXUS_PUBLISH_REGISTRY }}
 
       - name: Run SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
@@ -52,8 +57,7 @@ jobs:
           rsync -avz -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./ ec2-user@$HOST:/home/ec2-user/simple-ecommerce/
           ssh -i key.pem ec2-user@$HOST << 'EOF'
             cd ~/simple-ecommerce
-            echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):\
-            _auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
+            echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
             echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
             npm install
             pm2 stop all || true
