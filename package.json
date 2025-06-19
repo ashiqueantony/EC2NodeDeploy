@@ -1,18 +1,13 @@
 {
   "name": "webprogrammingnodejs",
   "version": "1.0.0",
-  "description": "A Node.js web app integrated with Nexus Repository",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "publish:nexus": "npm publish"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Erol Demircelik",
   "license": "ISC",
-  "publishConfig": {
-    "registry": "http://16.170.214.180:8081/repository/nodejs.appp/"
-  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
@@ -24,12 +19,9 @@
     "mongodb": "^3.4.1",
     "mongoose": "^5.8.3",
     "nodemon": "^2.0.2"
+  },
+  "publishConfig": {
+    "registry": "http://<nexus-ip>:8081/repository/npm-hosted/"
   }
 }
-{
-  "name": "@your-scope/webprogrammingnodejs",
-  "version": "1.0.0",
-  ...
-}
-  "private": false,
 
