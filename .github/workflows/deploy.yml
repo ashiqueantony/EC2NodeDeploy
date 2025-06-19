@@ -16,17 +16,18 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+  uses: actions/setup-node@v3
+  with:
+    node-version: 18
 
-      - name: Configure npm to use Nexus
-        run: |
-          echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
-          echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
+- name: Configure npm to use Nexus
+  run: |
+    echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
+    echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
 
-      - name: Install Dependencies from Nexus
-        run: npm install
+- name: Install Dependencies from Nexus
+  run: npm install
+
 
       - name: Publish to Nexus Repository
         run: |
