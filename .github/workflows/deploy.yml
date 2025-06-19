@@ -16,24 +16,25 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-  uses: actions/setup-node@v3
-  with:
-    node-version: 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-- name: Configure npm to use Nexus
-  run: |
-    echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
-    echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
+      - name: Configure npm to use Nexus for install
+        run: |
+          echo "//$(echo ${{ secrets.NEXUS_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
+          echo "registry=${{ secrets.NEXUS_REGISTRY }}" >> .npmrc
 
-- name: Install Dependencies from Nexus
-  run: npm install
+      - name: Install Dependencies from Nexus
+        run: npm install
 
-
-      - name: Publish to Nexus Repository
+      - name: Configure npm to publish to Nexus
         run: |
           echo "//$(echo ${{ secrets.NEXUS_PUBLISH_REGISTRY }} | sed 's|https\?://||'):_auth=$(echo -n '${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}' | base64)" > .npmrc
           echo "registry=${{ secrets.NEXUS_PUBLISH_REGISTRY }}" >> .npmrc
-          npm publish --registry=${{ secrets.NEXUS_PUBLISH_REGISTRY }}
+
+      - name: Publish to Nexus Repository
+        run: npm publish --registry=${{ secrets.NEXUS_PUBLISH_REGISTRY }}
 
       - name: Run SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
@@ -41,7 +42,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      # Optional: Quality Gate
+      # Optional: Quality Gate check
       # - name: Check Quality Gate Status
       #   uses: SonarSource/sonarqube-quality-gate-action@v1
       #   timeout-minutes: 5
